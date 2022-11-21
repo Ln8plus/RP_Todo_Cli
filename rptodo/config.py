@@ -10,8 +10,8 @@ CONFIG_DIR_PATH = Path(typer.get_app_dir(__app_name__))
 CONFIG_FILE_PATH = CONFIG_DIR_PATH / "confing.ini"
 
 def init_app(db_path: str) -> int:
+
     config_code = _init_config_file()
-    
     if config_code != SUCCESS:
         return config_code
 
@@ -32,6 +32,7 @@ def _init_config_file() -> int:
         CONFIG_FILE_PATH.touch(exist_ok = True)
     except OSError:
         return FILE_ERROR
+        
     return SUCCESS
 
 
