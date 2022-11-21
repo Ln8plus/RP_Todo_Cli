@@ -1,2 +1,6 @@
 requirements.txt
 todo_cli_venv
+
+#pycache
+tests/__pycache__
+rptodo/__pycache__
