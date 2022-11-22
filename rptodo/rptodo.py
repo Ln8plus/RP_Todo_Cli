@@ -13,6 +13,11 @@ class Todoer:
         self._db_handler = DatabaseHandler(db_path)
 
 
+    def get_todo_list(self) -> List[Dict[str, Any]]:
+        read = self._db_handler.read_todos()
+        return read.todo_list
+
+
     def add(self, description: List[str], priority: int = 2) -> CurrentTodo:
         description_text = " ".join(description)
         if not description_text.endswith("."):
