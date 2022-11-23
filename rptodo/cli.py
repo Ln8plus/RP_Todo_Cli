@@ -147,4 +147,71 @@ def set_done(todo_id: int = typer.Argument(...)) -> None:
             f"""To-Do task # "{todo_id}" "{todo['Description']}" has been completed !""",
             fg = typer.colors.GREEN,
         )
-  
+
+
+@app.command()
+def remove(
+    todo_id: int = typer.Argument(...),
+    force: bool = typer.Option(
+        False,
+        "--force",
+        "--f",
+        help = "Force deletion without confirmation.",
+        ),
+    ) -> None:
+    todoer = get_todoer()
+
+    def _remove():
+        todo, error = todoer.remove(todo_id)
+        if error:
+            typer.secho(
+                f'Removing To-Do # {todo_id} failed with "{ERRORS[error]}"',
+                fg = typer.colors.RED,
+            )
+            raise typer.Exit(1)
+        else:
+            typer.secho(
+                f"""To-Do # {todo_id}: '{todo["Description"]}' was removed.""",
+                fg = typer.colors.GREEN,
+            )
+    
+    if force:
+        _remove()
+    else:
+        todo_list = todoer.get_todo_list()
+        try:
+            todo = todo_list[todo_id - 1]
+        except IndexError:
+            typer.secho("Invalid To-Do id.", fg = typer.colors.RED)
+            raise typer.Exit(1)
+        delete = typer.confirm(
+            f"Delete To-Do # {todo_id}: {todo['Description']} ?"
+        )
+        if delete:
+            _remove()
+        else:
+            typer.echo("Operation cancelled.")
+
+
+@app.command(name = 'clear')
+def remove_all(
+    force: bool = typer.Option(
+        ...,
+        prompt = "Delete all To-Do tasks ?",
+        help = "Force deleteion without confirmation.",
+    ),  
+) -> None:
+    todoer = get_todoer()
+    if force:
+        error = todoer.remove_all().error
+        if error:
+            typer.secho(
+                f'Removing To-Dos failed with "{ERRORS[error]}"',
+                fg = typer.colors.RED,
+            )
+            raise typer.Exit(1)
+        else:
+            typer.secho("All To-Dos were purged successfully.",
+            fg = typer.colors.GREEN)
+    else:
+        typer.echo("Operation cancelled.")
