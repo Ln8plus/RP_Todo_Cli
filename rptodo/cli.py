@@ -129,3 +129,22 @@ def main(
     )
 ) -> None:
     return
+
+
+@app.command(name = 'complete')
+def set_done(todo_id: int = typer.Argument(...)) -> None:
+    todoer = get_todoer()
+    todo, error = todoer.set_done(todo_id)
+
+    if error:
+        typer.secho(
+            f'Completing To-Do task # "{todo_id}" failed with: "{ERRORS[error]}"',
+            fg = typer.colors.RED,
+        )
+        raise typer.Exit(1)
+    else:
+        typer.secho(
+            f"""To-Do task # "{todo_id}" "{todo['Description']}" has been completed !""",
+            fg = typer.colors.GREEN,
+        )
+  
